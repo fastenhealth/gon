@@ -19,7 +19,7 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	"github.com/hashicorp/go-hclog"
+	hclog "github.com/hashicorp/go-hclog"
 
 	"github.com/mitchellh/gon/internal/createdmg"
 )

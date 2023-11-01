@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	hclog "github.com/hashicorp/go-hclog"
 	"os"
 	"sync"
 

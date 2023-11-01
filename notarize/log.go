@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	hclog "github.com/hashicorp/go-hclog"
 	"io"
 	"os/exec"
 	"path/filepath"

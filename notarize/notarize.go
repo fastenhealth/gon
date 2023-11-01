@@ -4,6 +4,7 @@ package notarize
 import (
 	"context"
 	"fmt"
+	hclog "github.com/hashicorp/go-hclog"
 	"os/exec"
 	"sync"
 	"time"

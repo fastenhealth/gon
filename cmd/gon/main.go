@@ -10,6 +10,8 @@ import (
 	"sync"
 
 	"github.com/fatih/color"
+	hclog "github.com/hashicorp/go-hclog"
+	multierror "github.com/hashicorp/go-multierror"
 	"github.com/mitchellh/gon/internal/config"
 	"github.com/mitchellh/gon/package/dmg"
 	"github.com/mitchellh/gon/package/zip"

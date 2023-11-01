@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"path/filepath"
 
+	hclog "github.com/hashicorp/go-hclog"
 	"howett.net/plist"
 )
 

@@ -8,7 +8,7 @@ import (
 	"io"
 	"os/exec"
 
-	"github.com/hashicorp/go-hclog"
+	hclog "github.com/hashicorp/go-hclog"
 )
 
 // Options are the options for Sign.
