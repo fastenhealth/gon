@@ -7,8 +7,6 @@ import (
 	"os/exec"
 	"sync"
 	"time"
-
-	"github.com/hashicorp/go-hclog"
 )
 
 // Options are the options for notarization.
@@ -46,6 +44,21 @@ type Options struct {
 	// used for tests to overwrite where the codesign binary is. If this isn't
 	// specified then we use `xcrun notarytool` as the base.
 	BaseCmd *exec.Cmd
+
+	// Support for https://developer.apple.com/help/app-store-connect/get-started/app-store-connect-api
+	// https://developer.apple.com/forums/thread/701859
+	// App Store Connect API Key ID. For most teams this will be
+	// a 10 character alphanumeric string.
+	ApiKeyId string
+	// App Store Connect API key. File system path to the private key.
+	ApiPrivateKeyPath string
+	// App Store Connect API Issuer ID. The issuer ID is a UUID
+	// format string.
+	IssuerId string
+}
+
+func (o *Options) UsesApiAuthentication() bool {
+	return o.ApiKeyId != "" && o.ApiPrivateKeyPath != "" && o.IssuerId != ""
 }
 
 // Notarize performs the notarization process for macOS applications. This

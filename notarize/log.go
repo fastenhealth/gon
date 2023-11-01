@@ -8,8 +8,6 @@ import (
 	"io"
 	"os/exec"
 	"path/filepath"
-
-	"github.com/hashicorp/go-hclog"
 )
 
 // Log Retrieves notarization log for a single completed submission
@@ -69,9 +67,19 @@ func log(ctx context.Context, uuid string, opts *Options) (*Log, error) {
 		"notarytool",
 		"log",
 		uuid,
-		"--apple-id", opts.DeveloperId,
-		"--password", opts.Password,
-		"--team-id", opts.Provider,
+	}
+	if opts.UsesApiAuthentication() {
+		cmd.Args = append(cmd.Args,
+			"--key-id", opts.ApiKeyId,
+			"--key", opts.ApiPrivateKeyPath,
+			"--issuer", opts.IssuerId,
+		)
+	} else {
+		cmd.Args = append(cmd.Args,
+			"--apple-id", opts.DeveloperId,
+			"--password", opts.Password,
+			"--team-id", opts.Provider,
+		)
 	}
 
 	// We store all output in out for logging and in case there is an error

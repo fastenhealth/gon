@@ -47,6 +47,17 @@ type AppleId struct {
 	// specified if you're using an Apple ID account that has multiple
 	// teams.
 	Provider string `hcl:"provider,optional"`
+
+	// Support for https://developer.apple.com/help/app-store-connect/get-started/app-store-connect-api
+	// https://developer.apple.com/forums/thread/701859
+	// App Store Connect API Key ID. For most teams this will be
+	// a 10 character alphanumeric string.
+	ApiKeyId string `hcl:"api_key_id,optional"`
+	// App Store Connect API key. File system path to the private key.
+	ApiPrivateKeyPath string `hcl:"api_private_key_path,optional"`
+	// App Store Connect API Issuer ID. The issuer ID is a UUID
+	// format string.
+	IssuerId string `hcl:"issuer_id,optional"`
 }
 
 // Notarize are the options for notarizing a pre-built file.

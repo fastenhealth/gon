@@ -6,8 +6,6 @@ import (
 	"sync"
 
 	"github.com/fatih/color"
-	"github.com/hashicorp/go-hclog"
-
 	"github.com/mitchellh/gon/internal/config"
 	"github.com/mitchellh/gon/notarize"
 	"github.com/mitchellh/gon/staple"
@@ -65,13 +63,17 @@ func (i *item) notarize(ctx context.Context, opts *processOptions) error {
 
 	// Start notarization
 	_, _, err := notarize.Notarize(ctx, &notarize.Options{
-		File:        i.Path,
-		DeveloperId: opts.Config.AppleId.Username,
-		Password:    opts.Config.AppleId.Password,
-		Provider:    opts.Config.AppleId.Provider,
-		Logger:      opts.Logger.Named("notarize"),
-		Status:      &statusHuman{Prefix: opts.Prefix, Lock: lock},
-		UploadLock:  opts.UploadLock,
+		File:              i.Path,
+		DeveloperId:       opts.Config.AppleId.Username,
+		Password:          opts.Config.AppleId.Password,
+		Provider:          opts.Config.AppleId.Provider,
+		ApiKeyId:          opts.Config.AppleId.ApiKeyId,
+		ApiPrivateKeyPath: opts.Config.AppleId.ApiPrivateKeyPath,
+		IssuerId:          opts.Config.AppleId.IssuerId,
+
+		Logger:     opts.Logger.Named("notarize"),
+		Status:     &statusHuman{Prefix: opts.Prefix, Lock: lock},
+		UploadLock: opts.UploadLock,
 	})
 
 	// Save the error state. We don't save the notarization result yet

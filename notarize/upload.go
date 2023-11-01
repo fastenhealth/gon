@@ -8,7 +8,6 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	"github.com/hashicorp/go-hclog"
 	"howett.net/plist"
 )
 
@@ -40,10 +39,20 @@ func upload(ctx context.Context, opts *Options) (string, error) {
 		filepath.Base(cmd.Path),
 		"notarytool",
 		"submit", opts.File,
-		"--apple-id", opts.DeveloperId,
-		"--password", opts.Password,
-		"--team-id", opts.Provider,
 		"--output-format", "plist",
+	}
+	if opts.UsesApiAuthentication() {
+		cmd.Args = append(cmd.Args,
+			"--key-id", opts.ApiKeyId,
+			"--key", opts.ApiPrivateKeyPath,
+			"--issuer", opts.IssuerId,
+		)
+	} else {
+		cmd.Args = append(cmd.Args,
+			"--apple-id", opts.DeveloperId,
+			"--password", opts.Password,
+			"--team-id", opts.Provider,
+		)
 	}
 
 	// We store all output in out for logging and in case there is an error

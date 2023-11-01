@@ -10,9 +10,6 @@ import (
 	"sync"
 
 	"github.com/fatih/color"
-	"github.com/hashicorp/go-hclog"
-	"github.com/hashicorp/go-multierror"
-
 	"github.com/mitchellh/gon/internal/config"
 	"github.com/mitchellh/gon/package/dmg"
 	"github.com/mitchellh/gon/package/zip"
@@ -146,33 +143,33 @@ func realMain() int {
 		cfg.AppleId = &config.AppleId{}
 	}
 	if cfg.AppleId.Username == "" {
-		appleIdUsername, ok := os.LookupEnv("AC_USERNAME")
-		if !ok {
-			color.New(color.Bold, color.FgRed).Fprintf(os.Stdout, "❗️ No apple_id username provided\n")
-			color.New(color.FgRed).Fprintf(os.Stdout,
-				"An Apple ID username must be specified in the `apple_id` block or\n"+
-					"it must exist in the environment as AC_USERNAME,\n"+
-					"otherwise we won't be able to authenticate with Apple to notarize.\n")
-			return 1
+		if appleIdUsername, ok := os.LookupEnv("AC_USERNAME"); ok {
+			cfg.AppleId.Username = appleIdUsername
 		}
 
-		cfg.AppleId.Username = appleIdUsername
 	}
 
 	if cfg.AppleId.Password == "" {
-		if _, ok := os.LookupEnv("AC_PASSWORD"); !ok {
-			color.New(color.Bold, color.FgRed).Fprintf(os.Stdout, "❗️ No apple_id password provided\n")
-			color.New(color.FgRed).Fprintf(os.Stdout,
-				"An Apple ID password (or lookup directive) must be specified in the\n"+
-					"`apple_id` block or it must exist in the environment as AC_PASSWORD,\n"+
-					"otherwise we won't be able to authenticate with Apple to notarize.\n")
-			return 1
+		if _, ok := os.LookupEnv("AC_PASSWORD"); ok {
+			cfg.AppleId.Password = "@env:AC_PASSWORD"
 		}
 
-		cfg.AppleId.Password = "@env:AC_PASSWORD"
 	}
 	if cfg.AppleId.Provider == "" {
 		cfg.AppleId.Provider = os.Getenv("AC_PROVIDER")
+	}
+
+	//either (username & password) OR (api-key-id, api-private-key-path and issuer-id) must be set
+	if len(cfg.AppleId.Username) > 0 && len(cfg.AppleId.Password) > 0 {
+		color.New(color.Bold).Fprintf(os.Stdout, "==> Using username & password authentication\n")
+	} else if len(cfg.AppleId.ApiKeyId) > 0 && len(cfg.AppleId.ApiPrivateKeyPath) > 0 && len(cfg.AppleId.IssuerId) > 0 {
+		color.New(color.Bold).Fprintf(os.Stdout, "==> Using API Key authentication\n")
+	} else {
+		color.New(color.Bold, color.FgRed).Fprintf(os.Stdout, "❗️ No apple_id authentication provided\n")
+		color.New(color.FgRed).Fprintf(os.Stdout,
+			"Either (username & password) or (api_key_id, api_private_key_path and issuer_id) must be specified in the `apple_id` block.\n"+
+				"Otherwise we won't be able to authenticate with Apple to notarize.\n")
+		return 1
 	}
 
 	// If we're in source mode, then sign & package as configured
