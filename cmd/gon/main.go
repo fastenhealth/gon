@@ -151,14 +151,24 @@ func realMain() int {
 
 	}
 
-	if cfg.AppleId.Password == "" {
-		if _, ok := os.LookupEnv("AC_PASSWORD"); ok {
-			cfg.AppleId.Password = "@env:AC_PASSWORD"
-		}
-
+	if strings.HasPrefix(cfg.AppleId.Username, "@env:") {
+		cfg.AppleId.Username = os.Getenv(strings.TrimPrefix(cfg.AppleId.Username, "@env:"))
 	}
-	if cfg.AppleId.Provider == "" {
-		cfg.AppleId.Provider = os.Getenv("AC_PROVIDER")
+	if strings.HasPrefix(cfg.AppleId.Password, "@env:") {
+		cfg.AppleId.Password = os.Getenv(strings.TrimPrefix(cfg.AppleId.Password, "@env:"))
+	}
+	if strings.HasPrefix(cfg.AppleId.Provider, "@env:") {
+		cfg.AppleId.Provider = os.Getenv(strings.TrimPrefix(cfg.AppleId.Provider, "@env:"))
+	}
+
+	if strings.HasPrefix(cfg.AppleId.ApiPrivateKeyPath, "@env:") {
+		cfg.AppleId.ApiPrivateKeyPath = os.Getenv(strings.TrimPrefix(cfg.AppleId.ApiPrivateKeyPath, "@env:"))
+	}
+	if strings.HasPrefix(cfg.AppleId.ApiKeyId, "@env:") {
+		cfg.AppleId.ApiKeyId = os.Getenv(strings.TrimPrefix(cfg.AppleId.ApiKeyId, "@env:"))
+	}
+	if strings.HasPrefix(cfg.AppleId.IssuerId, "@env:") {
+		cfg.AppleId.IssuerId = os.Getenv(strings.TrimPrefix(cfg.AppleId.IssuerId, "@env:"))
 	}
 
 	//either (username & password) OR (api-key-id, api-private-key-path and issuer-id) must be set
